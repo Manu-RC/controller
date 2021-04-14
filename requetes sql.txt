@@ -1,0 +1,116 @@
+CREATE DATABASE Assosiris;
+USE Assosiris;
+
+CREATE TABLE Utilisateur (
+    idUser INT NOT NULL,
+    nom VARCHAR(20),
+    prenom VARCHAR(20),
+    adresse VARCHAR(30),
+    promo VARCHAR(10),
+    numTel VARCHAR(10),
+    compteMessenger VARCHAR(20),
+    PRIMARY KEY (idUser))
+ENGINE= INNODB CHARSET=utf8;
+
+CREATE TABLE Livreur (
+    idUser INT NOT NULL,
+    etat ENUM ('disponible','indisponible'),
+    PRIMARY KEY (idUser),
+    FOREIGN KEY (idUser) REFERENCES Utilisateur(idUser))
+ENGINE=INNODB CHARSET=utf8;
+
+CREATE TABLE Admin (
+    idUser INT NOT NULL,
+    PRIMARY KEY (idUser),
+    FOREIGN KEY (idUser) REFERENCES Utilisateur(idUser))
+ENGINE=INNODB CHARSET=utf8;
+
+CREATE TABLE Chauffeur (
+    idUser INT NOT NULL,
+    PRIMARY KEY (idUser),
+    FOREIGN KEY (idUser) REFERENCES Utilisateur(idUser))
+ENGINE=INNODB CHARSET=utf8;
+
+CREATE TABLE Livraison (
+    idLivraison INT NOT NULL,
+    etat ENUM ('livrée','en cours de préparation','en cours de livraison'),
+    idLivreur INT NOT NULL,
+    idDestinataire INT NOT NULL,
+    ptLivraison VARCHAR(20),
+    PRIMARY KEY (idLivraison),
+    FOREIGN KEY (idLivreur) REFERENCES Livreur(idUser),
+    FOREIGN KEY (idDestinataire) REFERENCES Utilisateur(idUser))
+ENGINE=INNODB CHARSET=utf8;
+
+CREATE TABLE Note (
+    idLivraison INT NOT NULL,
+    note ENUM ('0','1','2','3','4','5'),
+    PRIMARY KEY (idLivraison),
+    FOREIGN KEY (idLivraison) REFERENCES Livraison(idLivraison))
+ENGINE=INNODB CHARSET=utf8;    
+
+CREATE TABLE Besoin (
+    idBesoin INT NOT NULL,
+    PRIMARY KEY (idBesoin))
+ENGINE=INNODB CHARSET=utf8;
+
+CREATE TABLE Article (
+    idArticle INT NOT NULL,
+    PRIMARY KEY (idArticle),
+	FOREIGN KEY (idArticle) REFERENCES Besoin(idBesoin))
+ENGINE=INNODB CHARSET=utf8;
+    
+CREATE TABLE Nourriture(
+    idArticle INT NOT NULL,
+    disponibilite BOOLEAN, 
+    nom VARCHAR(20),
+    PRIMARY KEY (idArticle),
+	FOREIGN KEY (idArticle) REFERENCES Article(idArticle))
+ENGINE=INNODB CHARSET=utf8;
+
+CREATE TABLE Boisson (
+    idArticle INT NOT NULL,
+    disponibilite BOOLEAN,
+    nom VARCHAR(20),
+    PRIMARY KEY (idArticle),
+	FOREIGN KEY (idArticle) REFERENCES Article(idArticle))
+ENGINE=INNODB CHARSET=utf8;
+
+CREATE TABLE Festif (
+    idArticle INT NOT NULL,
+    disponibilite BOOLEAN,
+    nom VARCHAR(20),
+    PRIMARY KEY (idArticle),
+	FOREIGN KEY (idArticle) REFERENCES Article(idArticle))
+ENGINE=INNODB CHARSET=utf8;
+
+CREATE TABLE LivreDans (
+    idArticle INT NOT NULL,
+    idLivraison INT NOT NULL,
+    PRIMARY KEY (idArticle,idLivraison),
+    FOREIGN KEY (idArticle) REFERENCES Article(idArticle),
+    FOREIGN KEY (idLivraison) REFERENCES Livraison(idLivraison) ON DELETE CASCADE)
+ENGINE=INNODB CHARSET=utf8;
+
+CREATE TABLE Service (
+    idService INT NOT NULL,
+    PRIMARY KEY (idService),
+	FOREIGN KEY (idService) REFERENCES Besoin(idBesoin))
+ENGINE=INNODB CHARSET=utf8;
+    
+CREATE TABLE Taxi (
+    idService INT NOT NULL,
+    PRIMARY KEY (idService),
+	FOREIGN KEY (idService) REFERENCES Service(idService))
+ENGINE=INNODB CHARSET=utf8;
+
+CREATE TABLE Voyage (
+    idVoyage INT NOT NULL,
+    idChauffeur INT NOT NULL,
+    idPassager INT NOT NULL,
+	ptRDV VARCHAR(20),
+    heureRDV TIME,
+  	PRIMARY KEY (idVoyage),
+    FOREIGN KEY (idChauffeur) REFERENCES Chauffeur(idUser),
+    FOREIGN KEY (idPassager) REFERENCES Utilisateur(idUser))
+ENGINE=INNODB CHARSET=utf8;
